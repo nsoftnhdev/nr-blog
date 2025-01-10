@@ -5,42 +5,46 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTheme } from "next-themes";
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon, FaSun } from "react-icons/fa";
+import { light, shadesOfPurple } from "@clerk/themes";
 import React, { useEffect, useState } from "react";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 
 const Header = () => {
-
   const path = usePathname();
   const router = useRouter();
-  const [searchTerm, setSearchTerm] = useState("")
+  const [searchTerm, setSearchTerm] = useState("");
   const searchParams = useSearchParams();
   const { theme, setTheme } = useTheme();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const urlPrarams = new URLSearchParams(searchParams);
-    urlPrarams.set("searchTerm", searchTerm)
+    urlPrarams.set("searchTerm", searchTerm);
     const searchQuery = urlPrarams.toString();
-    router.push(`/search?${searchQuery}`)
-  }
+    router.push(`/search?${searchQuery}`);
+  };
 
   useEffect(() => {
     const urlPrarams = new URLSearchParams(searchParams);
-    const searchTermFromUrl = urlPrarams.get("searchTerm")
+    const searchTermFromUrl = urlPrarams.get("searchTerm");
     if (searchTermFromUrl) {
-      setSearchTerm(searchTermFromUrl)
+      setSearchTerm(searchTermFromUrl);
     }
-  }, [searchParams])
+  }, [searchParams]);
 
   return (
     <Navbar className="border-b-2">
-      <Link 
-        href="/" 
-        className="self center whitespace-nowrap text-sm sm:text-xl font-semibold dark:text-white" 
+      <Link
+        href="/"
+        className="self center whitespace-nowrap text-sm sm:text-xl font-semibold dark:text-white"
       >
-        <span className="px-2 py-1 bg-gradient-to-r from-teal-500 via-lime-500 to-green-500 rounded-lg text-white">NR&apos;s</span><span className="text-slate-700 font-semibold ml-1">Blog</span>
+        <span className="px-2 py-1 bg-gradient-to-r from-teal-500 via-lime-500 to-green-500 rounded-lg text-white">
+          NR&apos;s
+        </span>
+        <span className="text-slate-700 font-semibold ml-1">Blog</span>
       </Link>
       <form onSubmit={handleSubmit}>
-        <TextInput 
+        <TextInput
           type="text"
           placeholder="Search..."
           rightIcon={AiOutlineSearch}
@@ -52,39 +56,50 @@ const Header = () => {
       <Button className="w-12 h-10 lg:hidden" color="gray" pill>
         <AiOutlineSearch />
       </Button>
-        <div className="flex gap-2 md:order-2">
-          <Button 
-            className="w-12 h-12 hidden sm:inline"
-            color="gray"
-            pill
-            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-          >
-            {theme === "light" ? <FaSun /> : <FaMoon />}
-          </Button>
-            <Link href="/sign-in">
-              <Button gradientDuoTone="tealToLime" outline>
-                Sign In
-              </Button>
-            </Link>
-          <Navbar.Toggle />
-        </div>
-        <Navbar.Collapse>
-          <Link href="/">
-            <Navbar.Link active={path === "/"} as={"div"}>
-              Home
-            </Navbar.Link>
+      <div className="flex gap-2 md:order-2">
+        <Button
+          className="w-12 h-12 hidden sm:inline"
+          color="gray"
+          pill
+          onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+        >
+          {theme === "light" ? <FaSun /> : <FaMoon />}
+        </Button>
+        <SignedIn>
+          <UserButton 
+            appearance={
+              {
+                baseTheme: theme === "light" ? light : shadesOfPurple,
+              }
+            }
+          />
+        </SignedIn>
+        <SignedOut>
+          <Link href="/sign-in">
+            <Button gradientDuoTone="tealToLime" outline>
+              Sign In
+            </Button>
           </Link>
-          <Link href="/about">
-            <Navbar.Link active={path === "/about"} as={"div"}>
-              About
-            </Navbar.Link>
-          </Link>
-          <Link href="/projects">
-            <Navbar.Link active={path === "/projects"} as={"div"}>
-              Projects
-            </Navbar.Link>
-          </Link>
-        </Navbar.Collapse>
+        </SignedOut>
+        <Navbar.Toggle />
+      </div>
+      <Navbar.Collapse>
+        <Link href="/">
+          <Navbar.Link active={path === "/"} as={"div"}>
+            Home
+          </Navbar.Link>
+        </Link>
+        <Link href="/about">
+          <Navbar.Link active={path === "/about"} as={"div"}>
+            About
+          </Navbar.Link>
+        </Link>
+        <Link href="/projects">
+          <Navbar.Link active={path === "/projects"} as={"div"}>
+            Projects
+          </Navbar.Link>
+        </Link>
+      </Navbar.Collapse>
     </Navbar>
   );
 };
