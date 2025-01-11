@@ -29,8 +29,6 @@ export async function POST() {
   const payload = await req.json()
   const body = JSON.stringify(payload)
 
-  
-
   // Verify payload with headers
   try {
     evt = wh.verify(body, {
@@ -45,6 +43,13 @@ export async function POST() {
     })
   }
 
+  // Do something with payload
+  // For this guide, log payload to console
+  const { id } = evt.data
+  const eventType = evt.type
+  console.log(`Received webhook with ID ${id} and event type of ${eventType}`)
+  console.log('Webhook payload:', body)
+
   if (evt.type === 'user.created') {
     console.log('userId:', evt.data.id)
   }
@@ -52,11 +57,6 @@ export async function POST() {
   if (evt.type === 'user.updated') {
     console.log('user is updated:', evt.data.id)
   }
-
-  const { id } = evt.data
-  const eventType = evt.type
-  console.log(`Received webhook with ID ${id} and event type of ${eventType}`)
-  console.log('Webhook payload:', body)
 
   return new Response('Webhook received', { status: 200 })
 }
