@@ -13,7 +13,7 @@ export const connect = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI, {
       dbName: 'next-blog',
-      newUserUrlParser: true,
+      useNewUrlParser: true,
       useUnifiedTopology: true,
     }); 
     console.log('Connected to MongoDB');
